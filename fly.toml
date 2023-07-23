@@ -1,0 +1,22 @@
+# fly.toml app configuration file generated for icy-snowflake-8306 on 2023-07-20T08:48:17+09:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "icy-snowflake-8306"
+primary_region = "nrt"
+
+[env]
+  PORT = "8081"
+  HOST = "https://icy-snowflake-8306.fly.dev"
+  SHOPIFY_API_KEY = "86856cec2d75fba3cdf771f2e2175406"
+  SCOPES = "write_products,read_discounts"
+  DATABASE_URL = "postgres://postgres:lqvaEg4nc3Lsvsc@rough-sound-5252.flycast:5432"
+
+[http_service]
+  internal_port = 8081
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

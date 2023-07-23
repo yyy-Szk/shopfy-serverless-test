@@ -47,6 +47,7 @@ export default defineConfig({
   plugins: [react()],
   define: {
     "process.env.SHOPIFY_API_KEY": JSON.stringify(process.env.SHOPIFY_API_KEY),
+    "process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
   },
   resolve: {
     preserveSymlinks: true,
@@ -60,6 +61,7 @@ export default defineConfig({
       "^/api(/|(\\?.*)?$)": proxyOptions,
       "^/qrcodes/[0-9]+/image(\\?.*)?$": proxyOptions,
       "^/qrcodes/[0-9]+/scan(\\?.*)?$": proxyOptions,
+      "^/account(\\?.*)?$": proxyOptions,
     },
   },
 });

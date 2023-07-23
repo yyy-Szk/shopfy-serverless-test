@@ -1,7 +1,7 @@
 import { BillingInterval, LATEST_API_VERSION, Session } from "@shopify/shopify-api";
 import { shopifyApp } from "@shopify/shopify-app-express";
-import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
-import {PostgreSQLSessionStorage} from '@shopify/shopify-app-session-storage-postgresql';
+// import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
+// import {PostgreSQLSessionStorage} from '@shopify/shopify-app-session-storage-postgresql';
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
 // - storeSession: DBにセッション情報を保存。引数[session]
@@ -89,7 +89,9 @@ class OriginalSessionStorage {
 // import sqlite3 from "sqlite3";
 import pg from "pg";
 import { join } from "path";
-const DATABASE_URL = "postgres://yoshimasa-suzuki:@localhost:5432/shopify_tutorial"
+const DATABASE_URL = process.env.DATABASE_URL;
+// const DATABASE_URL = "postgres://yoshimasa-suzuki:@localhost:5432/shopify_tutorial";
+
 import { QRCodesDB } from "./qr-codes-db.js";
 
 // const DB_PATH = `${process.cwd()}/database.sqlite`;

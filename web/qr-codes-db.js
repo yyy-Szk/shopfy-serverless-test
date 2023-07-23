@@ -7,13 +7,17 @@ import path from "path";
 import shopify from "./shopify.js";
 import pg from "pg";
 
-const DEFAULT_DB_FILE = path.join(process.cwd(), "qr_codes_db.sqlite");
+// const DEFAULT_DB_FILE = path.join(process.cwd(), "qr_codes_db.sqlite");
+console.log("====================================")
+console.log(process.env.DATABASE_URL)
+console.log("====================================")
 const DEFAULT_PURCHASE_QUANTITY = 1;
-const DATABASE_URL = "postgres://yoshimasa-suzuki:@localhost:5432/shopify_tutorial"
+const DATABASE_URL = process.env.DATABASE_URL
 
 export const QRCodesDB = {
   qrCodesTableName: "qr_codes",
   sessionsTableName: "sessions",
+  accountsTableName: "accounts",
   db: null,
   ready: null,
   connection: async function() {
@@ -135,6 +139,29 @@ export const QRCodesDB = {
     return true;
   },
 
+  createAccount: async function (company, email, orderAveragePrice,orderCountPerMonth, overview, password) {
+    await this.ready;
+
+    const query = `
+      INSERT INTO ${this.accountsTableName}
+      (company, email, order_average_price, order_count_per_month, overview, password)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id;
+    `;
+
+    const rawResults = await this.__query(query, [
+      company,
+      email,
+      orderAveragePrice,
+      orderCountPerMonth,
+      overview,
+      password
+    ]);
+    const rows = rawResults.rows;
+
+    return rows[0].id;
+  },
+
   /* The destination URL for a QR code is generated at query time */
   generateQrcodeDestinationUrl: function (qrcode) {
     return `${shopify.api.config.hostScheme}://${shopify.api.config.hostName}/qrcodes/${qrcode.id}/scan`;
@@ -188,16 +215,27 @@ export const QRCodesDB = {
     return rows.length === 1;
   },
 
+  __hasAccountsTable: async function () {
+    const query = `
+      SELECT 1 FROM information_schema.tables WHERE table_name = $1;
+    `;
+    const result = await this.__query(query, [this.accountsTableName]);
+    const rows = result.rows;
+
+    return rows.length === 1;
+  },
+
   /* Initializes the connection with the app's sqlite3 database */
   init: async function () {
-
+    console.log("init")
     /* Initializes the connection to the database */
     this.db = this.db ?? await this.connection
 
     const hasQrCodesTable = await this.__hasQrCodesTable();
     const hasSessionsTable = await this.__hasSessionsTable();
+    const hasAccountsTable = await this.__hasAccountsTable();
     
-    if (hasQrCodesTable && hasSessionsTable) {
+    if (hasQrCodesTable && hasSessionsTable && hasAccountsTable) {
       this.ready = Promise.resolve();
       return
     }
@@ -236,6 +274,22 @@ export const QRCodesDB = {
           expires INTEGER,
           onlineAccessInfo VARCHAR(255),
           accessToken VARCHAR(255),
+          createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+      readyQueries.push(this.__query(query));
+    }
+
+    if (!hasAccountsTable) {
+      const query = `
+        CREATE TABLE ${this.accountsTableName} (
+          id SERIAL PRIMARY KEY,
+          company VARCHAR(255),
+          email VARCHAR(255) NOT NULL,
+          order_average_price INTEGER NOT NULL,
+          order_count_per_month INTEGER NOT NULL,
+          overview VARCHAR(255) NOT NULL,
+          password VARCHAR(255) NOT NULL,
           createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
       `;
