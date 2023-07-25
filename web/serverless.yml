@@ -1,0 +1,22 @@
+app: aws-node-express-api
+service: express
+useDotenv: true
+
+# serverless.yml
+provider:
+  name: aws
+  region: ap-northeast-1
+  runtime: nodejs16.x
+
+
+functions:
+  app:
+    handler: index.handler
+    environment:
+      SHOPIFY_API_KEY: ${env:SHOPIFY_API_KEY}
+      SHOPIFY_API_SECRET: ${env:SHOPIFY_API_SECRET}
+      SCOPES: ${env:SCOPES}
+      DATABASE_URL: ${env:DATABASE_URL}
+      HOST: ${env:HOST}
+    events:
+      - httpApi: "*"

@@ -2,8 +2,6 @@
   This file interacts with the app's database and is used by the app's REST APIs.
 */
 
-import sqlite3 from "sqlite3";
-import path from "path";
 import shopify from "./shopify.js";
 import pg from "pg";
 

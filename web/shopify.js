@@ -1,7 +1,5 @@
 import { BillingInterval, LATEST_API_VERSION, Session } from "@shopify/shopify-api";
 import { shopifyApp } from "@shopify/shopify-app-express";
-// import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
-// import {PostgreSQLSessionStorage} from '@shopify/shopify-app-session-storage-postgresql';
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
 // - storeSession: DBにセッション情報を保存。引数[session]

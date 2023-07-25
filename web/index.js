@@ -10,6 +10,7 @@ import applyQrCodePublicEndpoints from "./middleware/qr-code-public.js";
 import applyAccountApiEndpoints from "./middleware/account-api.js";
 
 import GDPRWebhookHandlers from "./gdpr.js";
+import serverlessExpress from '@vendia/serverless-express'
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
@@ -56,4 +57,7 @@ app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
     .send(readFileSync(join(STATIC_PATH, "index.html")));
 });
 
-app.listen(PORT);
+if (process.env.NODE_ENV === "development")
+  app.listen(PORT);
+
+export const handler = serverlessExpress({ app })
